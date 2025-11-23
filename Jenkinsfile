@@ -36,6 +36,13 @@ pipeline {
                     sh 'npm run build'
             }
         }
+        stage('Buiil docker image'){
+                steps {
+                    sh 'docker build -t backend-test .'
+                    
+            }
+        }
+
         stage('fin pipeline') {
             steps {
                 echo 'finalizando pipeline en jenkins'
