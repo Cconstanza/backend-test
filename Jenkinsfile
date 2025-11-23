@@ -1,51 +1,60 @@
 pipeline {
-    agent { 
-            docker { 
-                image "node:22"
+    agent any
+    stages{
+        stage("Procesando aplicacion NodeJS"){
+            agent { 
+                docker {
+                    image "node:22"
                 }
+            }
+            stages{
+                stage('inicio pipeline'){
+                    steps {
+                        sh 'echo "iniciando pipeline"'
+                    }
+                }
+                stage('dependencias'){
+                    steps {
+                        sh 'echo "Instalando dependencias"'
+                        sh 'npm install'
+                    }
+                }
+                stage('Lint de codigo'){
+                    steps {
+                        sh 'echo "Haciendo linter al codigo"'
+                        sh 'npm run lint'
+                    }
+                }
+                stage('Ejecutando test y coverage'){
+                    steps {
+                        sh 'echo "Haciendo testing al codigo"'
+                        sh 'npm run test:cov'
+                    }
+                }
+                stage('Ejecutando build'){
+                    steps {
+                        sh 'echo "Haciendo build del codigo"'
+                        sh 'npm run build'
+                    }
+                }
+            }
+        }
 
-    }
-    stages {
-        stage('Inicio pipeline') {
-            steps {
-                sh 'echo "Iniciando pipeline en jenkins"'
-            }
-        }
-        
-        stage('dependencias') {
-            steps {
-                sh 'echo "instalando dependencias"'
-                sh 'npm install'
-            }
-        }
-        stage('Lint de codigo'){
-                steps {
-                    sh 'echo "Haciendo linter al codigo"'
-                    sh 'npm run lint'
-            }
-        }
-        stage('Ejecutando test y coverage'){
-            steps {
-                    sh 'echo "Haciendo testing al codigo"'
-                    sh 'npm run test:cov'
-            }
-        }
-        stage('Ejecutando build'){
-                steps {
-                    sh 'echo "Haciendo build del codigo"'
-                    sh 'npm run build'
-            }
-        }
         stage('Build docker image'){
-                steps {
-                    sh 'docker build -t backend-test .'
-                    
+            steps {
+                sh 'docker build -t backend-test .'
+                sh 'docker tag backend-test sotoconstanza/backend-test'
+                script {
+                    docker.withRegistry("https://index.docker.io/v1/","id_credenciales_dockerhub") {
+                        sh 'docker push sotoconstanza/backend-test'
+                       
+                    }
+                }
             }
         }
-
-        stage('fin pipeline') {
+        stage('fin pipeline'){
             steps {
-                echo 'finalizando pipeline en jenkins'
+                echo 'finalizando pipeline'
             }
         }
     }
