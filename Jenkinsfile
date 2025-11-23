@@ -36,7 +36,7 @@ pipeline {
                     sh 'npm run build'
             }
         }
-        stage('Buiil docker image'){
+        stage('Build docker image'){
                 steps {
                     sh 'docker build -t backend-test .'
                     
