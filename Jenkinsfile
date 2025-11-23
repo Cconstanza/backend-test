@@ -49,6 +49,14 @@ pipeline {
                     docker.withRegistry("https://index.docker.io/v1/","id_credenciales_dockerhub") {
                         sh 'docker push sotoconstanza/backend-test'
                         sh "docker push sotoconstanza/backend-test:${env.BUILD_NUMBER}"
+                        sh 'docker push sotoconstanza/backend-test'
+                        sh "docker push sotoconstanza/backend-test:${env.BUILD_NUMBER}"
+                    }
+                    docker.withRegistry("https://ghcr.io","credencial-github"){
+                        sh 'docker tag backend-test ghcr.io/Cconstanza/backend-test'
+                        sh "docker tag backend-test ghcr.io/Cconstanza/backend-test:${env.BUILD_NUMBER}"
+                        sh 'docker push ghcr.io/Cconstanza/backend-test'
+                        sh "docker push ghcr.io/Cconstanza/backend-test:${env.BUILD_NUMBER}"
                     }
                 }
             }
