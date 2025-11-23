@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: csoto
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-test-config
+  namespace: csoto
+data:
+  USERNAME: "cmd"
+  ENDPOINT: "http://api.google.com/v1"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-test-sc
+  namespace: csoto
+type: Opaque
+stringData:
+  APIKEY: "123456789abcde"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-test-deploy
+  namespace: csoto
+  labels:
+    app: mi-app-backend-test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-test
+  template:
+    metadata:
+      labels:
+        app: backend-test
+    spec:
+      containers:
+      - name: backend
+        image: sotoconstanza/backend-test
+        imagePullPolicy: Always
+        env:
+        - name: NODE_ENV
+          value: development
+        - name: PORT
+          value: "8080"
+        - name: USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: backend-test-config
+              key: USERNAME
+              optional: true
+        - name: APIKEY
+          valueFrom:
+            secretKeyRef:
+              name: backend-test-sc
+              key: APIKEY
+              optional: true 
