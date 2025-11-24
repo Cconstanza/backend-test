@@ -46,7 +46,7 @@ spec:
         - name: NODE_ENV
           value: development
         - name: PORT
-          value: "8080"
+          value: "3000"
         - name: USERNAME
           valueFrom:
             configMapKeyRef:
@@ -59,3 +59,20 @@ spec:
               name: backend-test-sc
               key: APIKEY
               optional: true 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-test-service
+  namespace: csoto
+  labels:
+    app: mi-app-backend-test
+spec:
+  selector:
+    app: backend-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+
+  
